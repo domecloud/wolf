@@ -1,4 +1,6 @@
+const chalk = require('chalk')
 const ora = require('ora');
+const numeral     = require('numeral')
 
 /*
 
@@ -30,7 +32,12 @@ module.exports = class Logger {
 
     status(stats) {
         try {
-            const newStats = 'Queue: ' + (Number(stats.queueCount) || 0) + ' Watchlist: ' + (Number(stats.watchCount) || 0);
+                
+//            const newStats =  (!trade.maker?chalk.green((chalk.grey("qty:")+numeral(trade.quantity).format("0.000")).padStart(24)):chalk.red((chalk.grey("qty:")+numeral(trade.quantity).format("0.000")).padStart(24)))
+//    + chalk.grey(" @ ") + chalk.cyan(trade.price).padEnd(24)
+//        	+ ((pnl >= 0)?chalk.green((chalk.grey("pnl:")+numeral(pnl).format("0.000")).padStart(16)):chalk.red((chalk.grey("pnl:")+numeral(pnl).format("0.000")).padStart(16))) 
+//            );
+	    const newStats = stats;
             this.stats = newStats;
             this.logger.text = newStats;
         } catch(err) {

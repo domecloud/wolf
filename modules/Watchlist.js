@@ -1,3 +1,7 @@
+const chalk = require('chalk')
+const numeral     = require('numeral')
+const moment      = require('moment')
+
 /*
 <--- Wolf.js --->
     const Watchlist = require('./Watchlist.js');
@@ -38,6 +42,7 @@ module.exports = class Watchlist {
     //watch for any triggers i.e STOP_LIMIT_PERCENTAGE, PROFIT_LOCK_PERCENTAGE, and repopulate queue accordingly via this.wolf.sell()
     watch() {
         const watchlist = this.meta.watchlist;
+        const queue = this.meta.queue;
         const config = this.config;
         const state = this.state;
         for (let orderId in watchlist) {
@@ -45,6 +50,17 @@ module.exports = class Watchlist {
             const orderPrice = Number(order.price);
             const orderQuantity = Number(order.executedQty);
             const currentPrice = this.ticker.meta.bid;
+            const logger = this.logger;
+	    var pnl = 100.00*(parseFloat(currentPrice)-orderPrice)/orderPrice;
+	    const newStats = chalk.grey(moment().format('h:mm:ss').padStart(8))
+		    + chalk.yellow(order.symbol.padStart(10))
+		    + chalk.green((chalk.grey("qty:")+numeral(orderQuantity).format("0.000")).padStart(24))
+		    + chalk.grey(" @ ") + chalk.cyan(currentPrice).padEnd(24)
+		    + ((pnl >= 0)?chalk.green((chalk.grey("pnl:")+numeral(pnl).format("0.000")).padStart(16)):chalk.red((chalk.grey("pnl:")+numeral(pnl).format("0.000")).padStart(16)))
+
+            logger.status(newStats);
+
+
             let shouldSell = false;
             if (currentPrice >= (orderPrice + (orderPrice * config.profitPercentage))) shouldSell = true;                         //profit percentage trigger
             if (state.paranoid && (currentPrice <= orderPrice + (orderPrice * config.profitLockPercentage))) {              //profit lock trigger
